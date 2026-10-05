@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "idea-zone",
+  "version": "0.1.1",
+  "description": "Turn complex conversations into polished, portable single-file HTML documents with Markdown, embedded images, tables, and page navigation.",
+  "author": {
+    "name": "Idea Zone"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Idea Zone",
+        "shortDescription": "Give your ideas room",
+        "longDescription": "Package an idea from your conversation into one self-contained HTML document. Choose Sage, Paper, or Midnight; use Markdown, tables, and embedded images; organise longer ideas into pages within the same file. Includes a bundled renderer and concise instructions. File creation requires a session with file tools; Node or Bun enables automatic rendering, with an HTML template fallback. No hosting service or external account is required to read exported ideas.",
+        "developerName": "Idea Zone",
+        "category": "Productivity",
+        "logo": "./assets/icon.svg",
+        "defaultPrompt": "Use Idea Zone to turn this conversation into a polished, shareable HTML document."
+      }
+    }
+  }
+}
