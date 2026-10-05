@@ -7,8 +7,9 @@ A private ChatGPT plugin and a Cloudflare Pages landing page for turning complex
 ## What is built
 
 - A skills-only Agent Plugins 1.0 package in `idea-zone/`. No backend, API key, MCP server, or document upload service.
-- Short instructions: write a title, optional subtitle/theme, and `pages` containing a title and Markdown. A bundled renderer handles layout, Markdown tables, images, navigation, and print styles. Includes an HTML template fallback for sessions without Node/Bun.
-- Three themes: Sage (default), Paper, Midnight.
+- Short instructions: write a title, optional subtitle/layout/palette, and `pages` containing a title and Markdown. A bundled renderer handles layout, Markdown tables, images, navigation, and print styles. Includes an HTML template fallback for sessions without Node/Bun.
+- Three separate layouts: Brief (default), Editorial, Report. Each output contains only its selected layout.
+- Four reader-selectable colour palettes in every file: Neutral (default), Warm, Sage, Dark. Palette changes do not change the document layout.
 - Every exported document is **one HTML file**. CSS and JavaScript are inline; local raster images are embedded as data URLs. Pages are navigable sections in the file. Opening an output requires only a browser.
 - `dist/index.html` is also **one file**. It contains the landing page, live examples, example downloads, and the complete plugin ZIP download. No CDN or network asset dependency.
 
@@ -34,7 +35,7 @@ npm run dev
 npm test
 ```
 
-Preview at http://localhost:5173. Build regenerates the bundled renderer, three example HTML documents, template, private plugin ZIP, and the single-file website. Browser checks use `npm run test:browser` after the dev server starts; install Chromium with `npx playwright install chromium` if no local browser is available.
+Preview at http://localhost:5173. Build regenerates the bundled renderer, three layout examples, three layout templates, private plugin ZIP, and the single-file website. Browser checks use `npm run test:browser` after the dev server starts; install Chromium with `npx playwright install chromium` if no local browser is available.
 
 ## Make a document
 
@@ -47,7 +48,8 @@ node idea-zone/skills/share-idea/assets/render.mjs examples/idea.json my-idea.ht
 {
   "title": "My idea",
   "subtitle": "A proposal for the team",
-  "theme": "sage",
+  "style": "brief",
+  "palette": "neutral",
   "pages": [
     {"title": "Overview", "markdown": "A **clear idea**.\n\n![Sketch](./sketch.png)"},
     {"title": "Plan", "markdown": "| Step | Owner |\n| --- | --- |\n| Try it | Us |"}
@@ -55,7 +57,7 @@ node idea-zone/skills/share-idea/assets/render.mjs examples/idea.json my-idea.ht
 }
 ```
 
-Only `title` and `pages` are required. Images resolve relative to the JSON input. PNG/JPEG/GIF/WebP/AVIF files are supported up to 10 MB each. Remote images must be downloaded first; unsupported or missing images cause an explicit error. Raw HTML is escaped; executable link schemes are removed. Documents contain a restrictive CSP and never automatically fetch remote resources. Outgoing source links work when followed.
+Only `title` and `pages` are required. `style` selects the layout at render time; it cannot be changed inside the output. `palette` selects the initial colour, and readers can switch it in the Colour menu. To make another layout, render another file with the same content. Legacy `theme` input (sage/paper/midnight) remains accepted as an initial palette for the Brief layout. Images resolve relative to the JSON input. PNG/JPEG/GIF/WebP/AVIF files are supported up to 10 MB each. Remote images must be downloaded first; unsupported or missing images cause an explicit error. Raw HTML is escaped; executable link schemes are removed. Documents contain a restrictive CSP and never automatically fetch remote resources. Outgoing source links work when followed.
 
 Generated files can be large when images are included. Some email services block HTML attachments; PDF export provides an alternative. Hosting a user's document requires a separate explicit request.
 
@@ -72,6 +74,10 @@ Wrangler returns the actual deployment and project URLs. The name may already be
 
 For Git integration, connect this repository in Cloudflare Pages, choose framework **None**, build command `npm ci && npm run build`, output directory `dist`. The output is still just `index.html`. Cloudflare distinguishes Git-integrated projects from Direct Upload projects; choose the intended workflow when creating the project.
 
+## Document design
+
+The output focuses on the supplied content: no product logo, promotional footer, slogans, or filler sections. Brief uses compact sans-serif type and a contents column. Editorial uses a serif reading column and horizontal navigation. Report uses numbered sections, compact tables, and a bordered document layout. These are separate files, not colour variations. Print styles include every section and use dark text on white paper regardless of the chosen screen palette.
+
 ## Design and research decisions
 
 - [Cloudflare supports static HTML](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/) and [Direct Upload of prebuilt assets](https://developers.cloudflare.com/pages/get-started/direct-upload/), so the landing page needs no server.
@@ -81,10 +87,11 @@ For Git integration, connect this repository in Cloudflare Pages, choose framewo
 
 ## Layout
 
-- `src/renderer.mjs`, `src/document.css`: renderer source and shared theme styles.
+- `src/renderer.mjs`, `src/document.css`: renderer source and shared palette/content styles.
+- `src/brief.css`, `src/editorial.css`, `src/report.css`: separate layout styles; only one is included in each exported file.
 - `src/landing.html`: landing page source with build placeholders.
 - `scripts/build.mjs`: build and private packaging.
-- `idea-zone/`: plugin manifest, skill, bundled renderer, template, example, icon, third-party licenses.
+- `idea-zone/`: plugin manifest, skill, bundled renderer, layout templates, example, icon, third-party licenses.
 - `plugin-release.json`: non-secret identifiers for the created private plugin.
 - `examples/`: input and generated examples.
 - `dist/index.html`: deployable website.

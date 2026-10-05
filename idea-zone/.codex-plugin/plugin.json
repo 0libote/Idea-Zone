@@ -1,8 +1,8 @@
 {
   "interface": {
     "displayName": "Idea Zone",
-    "shortDescription": "Give your ideas room",
-    "longDescription": "Package an idea from your conversation into one self-contained HTML document. Choose Sage, Paper, or Midnight; use Markdown, tables, and embedded images; organise longer ideas into pages within the same file. Includes a bundled renderer and concise instructions. File creation requires a session with file tools; Node or Bun enables automatic rendering, with an HTML template fallback. No hosting service or external account is required to read exported ideas.",
+    "shortDescription": "Documents from conversations",
+    "longDescription": "Turn a conversation into a readable HTML document. Brief, Editorial and Report are separate layouts with different typography and structure. Each exported file includes a reader-controlled colour menu, embedded images, Markdown tables, section navigation and print styles. Includes a bundled renderer and layout templates. File creation needs a session with file tools; Node or Bun enables automatic rendering, with an HTML template fallback.",
     "developerName": "Idea Zone",
     "category": "Productivity",
     "logo": "./assets/icon.svg",
@@ -10,8 +10,8 @@
     "capabilities": []
   },
   "name": "idea-zone",
-  "version": "0.1.1",
-  "description": "Turn complex conversations into polished, portable single-file HTML documents with Markdown, embedded images, tables, and page navigation.",
+  "version": "0.2.0",
+  "description": "Turn conversations into single-file HTML documents with tables, embedded images, separate layouts and reader-controlled colours.",
   "author": {
     "name": "Idea Zone"
   },
