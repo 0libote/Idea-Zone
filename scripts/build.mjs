@@ -148,10 +148,10 @@ const replacements = {
   __REPORT_IMAGE__:
     "data:image/webp;base64," +
     fs.readFileSync("examples/assets/release-path.webp").toString("base64"),
-  __EXAMPLES__: JSON.stringify(examples).replaceAll(/</g, String.raw`\u003c`),
+  __EXAMPLES__: JSON.stringify(examples).replaceAll("<", String.raw`\u003c`),
   __EXAMPLE_DATA__:
     "data:text/html;base64," + Buffer.from(examples.brief).toString("base64"),
-  __PLUGIN_URL__: url.replaceAll(/&/g, "&amp;").replaceAll(/"/g, "&quot;"),
+  __PLUGIN_URL__: url.replaceAll("&", "&amp;").replaceAll('"', "&quot;"),
   __PLUGIN_CTA__: cta,
   __PLUGIN_STATUS__: status,
   __PLUGIN_DATA__:
