@@ -10,7 +10,7 @@
     "capabilities": []
   },
   "name": "idea-zone",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Create complete HTML documents with images, rich Markdown, separate layouts and offline colour and font controls.",
   "author": {
     "name": "Idea Zone"

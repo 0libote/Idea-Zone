@@ -108,3 +108,15 @@ These are illustrative documents, not claims about completed work or verified tr
 - `tests/`: renderer, packaging, and browser verification.
 
 Private account creation does not establish public access or end-to-end model reliability. The renderer is verified independently; a real installed-chat trial is still needed to measure whether a chosen low-reasoning model follows the workflow reliably.
+
+## SonarCloud analysis
+
+Automatic analysis reads `.sonarcloud.properties`. Maintained code in `src/` and
+`scripts/` is analysed; `tests/` is classified as test code. Generated files in
+`dist/`, `examples/*.html`, and `idea-zone/skills/share-idea/assets/` are built from
+that source and include vendored dependencies, so they are outside the source
+analysis scope. They remain covered by renderer, accessibility, preview-server
+and browser checks. No quality-gate thresholds or source rules are disabled.
+
+Run `npm run build` before `npm test`. The build packages the plugin ZIP in Node;
+Python is not needed. A push triggers SonarCloud's configured automatic scan.

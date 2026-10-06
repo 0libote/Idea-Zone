@@ -17306,27 +17306,141 @@ function python(hljs) {
 }
 
 // src/reader.js
-var reader_default = `(()=>{
- const root=document.documentElement,pages=[...document.querySelectorAll('article > section.document-section')],links=[...document.querySelectorAll('nav a')],appearance=document.querySelector('#appearance');
- const palettes=['neutral','warm','sage','midnight'],fonts=['default','sans','serif','mono'];
- const key='idea-zone:'+document.title+':'+root.dataset.style;
- const embedded=location.href.startsWith('about:srcdoc');
- function setChoice(kind,value){if(!(kind==='palette'?palettes:fonts).includes(value))return;root.dataset[kind]=value;document.querySelectorAll('[data-'+kind+'-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[kind+'Choice']===value)));if(kind==='palette'){document.querySelector('meta[name="color-scheme"]').content=value==='midnight'?'dark':'light';document.querySelector('#view-colour').textContent={neutral:'Light',warm:'Paper',sage:'Sage',midnight:'Dark'}[value]}try{localStorage.setItem(key,JSON.stringify({palette:root.dataset.palette,font:root.dataset.font}))}catch{}}
- const initial={palette:root.dataset.palette,font:root.dataset.font};
- try{const saved=JSON.parse(localStorage.getItem(key));if(saved&&!embedded){initial.palette=saved.palette;initial.font=saved.font}}catch{}
- setChoice('palette',initial.palette);setChoice('font',initial.font);
- document.querySelectorAll('[data-palette-choice]').forEach(b=>b.addEventListener('click',()=>setChoice('palette',b.dataset.paletteChoice)));
- document.querySelectorAll('[data-font-choice]').forEach(b=>b.addEventListener('click',()=>setChoice('font',b.dataset.fontChoice)));
- document.addEventListener('click',e=>{if(appearance&&!appearance.contains(e.target))appearance.open=false});
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&appearance.open){appearance.open=false;appearance.querySelector('summary').focus()}});
- function show(hash=location.hash){const target=document.getElementById(hash.slice(1));const found=pages.find(p=>'#'+p.id===hash)||(target&&pages.find(p=>p.contains(target)));pages.forEach(p=>p.hidden=!!found&&p!==found);links.forEach(a=>{if(found&&a.getAttribute('href')==='#'+found.id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});}
- addEventListener('hashchange',()=>show());
- links.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const hash=a.getAttribute('href');show(hash);if(!embedded)location.hash=hash}));
- document.querySelectorAll('article a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const hash=a.getAttribute('href'),target=document.getElementById(hash.slice(1));if(target){e.preventDefault();show(hash);target.scrollIntoView({block:'center'});if(!embedded)history.pushState(null,'',hash)}}));
- document.querySelector('#all').addEventListener('click',e=>{e.preventDefault();if(!embedded)history.replaceState(null,'',location.pathname+location.search);show('')});
- document.querySelector('#print').addEventListener('click',()=>{appearance.open=false;print()});
- document.querySelector('#save').addEventListener('click',()=>{appearance.open=false;const clone=document.documentElement.cloneNode(true);clone.querySelector('#appearance').removeAttribute('open');const html='<!doctype html>\\n'+clone.outerHTML;const url=URL.createObjectURL(new Blob([html],{type:'text/html'})),a=document.createElement('a');a.href=url;a.download=(document.title.toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu,'-').replace(/^-|-$/g,'')||'document')+'.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000)});
- show();
+var reader_default = `(() => {
+  const root = document.documentElement,
+    pages = [
+      ...document.querySelectorAll("article > section.document-section"),
+    ],
+    links = [...document.querySelectorAll("nav a")],
+    appearance = document.querySelector("#appearance");
+  const palettes = ["neutral", "warm", "sage", "midnight"],
+    fonts = ["default", "sans", "serif", "mono"];
+  const key = "idea-zone:" + document.title + ":" + root.dataset.style;
+  const embedded = location.href.startsWith("about:srcdoc");
+  function setChoice(kind, value) {
+    if (!(kind === "palette" ? palettes : fonts).includes(value)) return;
+    root.dataset[kind] = value;
+    document
+      .querySelectorAll("[data-" + kind + "-choice]")
+      .forEach((b) =>
+        b.setAttribute(
+          "aria-pressed",
+          String(b.dataset[kind + "Choice"] === value),
+        ),
+      );
+    if (kind === "palette") {
+      document.querySelector('meta[name="color-scheme"]').content =
+        value === "midnight" ? "dark" : "light";
+      document.querySelector("#view-colour").textContent = {
+        neutral: "Light",
+        warm: "Paper",
+        sage: "Sage",
+        midnight: "Dark",
+      }[value];
+    }
+    try {
+      localStorage.setItem(
+        key,
+        JSON.stringify({
+          palette: root.dataset.palette,
+          font: root.dataset.font,
+        }),
+      );
+    } catch {}
+  }
+  const initial = { palette: root.dataset.palette, font: root.dataset.font };
+  try {
+    const saved = JSON.parse(localStorage.getItem(key));
+    if (saved && !embedded) {
+      initial.palette = saved.palette;
+      initial.font = saved.font;
+    }
+  } catch {}
+  setChoice("palette", initial.palette);
+  setChoice("font", initial.font);
+  document
+    .querySelectorAll("[data-palette-choice]")
+    .forEach((b) =>
+      b.addEventListener("click", () =>
+        setChoice("palette", b.dataset.paletteChoice),
+      ),
+    );
+  document
+    .querySelectorAll("[data-font-choice]")
+    .forEach((b) =>
+      b.addEventListener("click", () =>
+        setChoice("font", b.dataset.fontChoice),
+      ),
+    );
+  document.addEventListener("click", (e) => {
+    if (appearance && !appearance.contains(e.target)) appearance.open = false;
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && appearance.open) {
+      appearance.open = false;
+      appearance.querySelector("summary").focus();
+    }
+  });
+  function show(hash = location.hash) {
+    const target = document.getElementById(hash.slice(1));
+    const found =
+      pages.find((p) => "#" + p.id === hash) ||
+      (target && pages.find((p) => p.contains(target)));
+    pages.forEach((p) => (p.hidden = !!found && p !== found));
+    links.forEach((a) => {
+      if (found && a.getAttribute("href") === "#" + found.id)
+        a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+  }
+  addEventListener("hashchange", () => show());
+  links.forEach((a) =>
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const hash = a.getAttribute("href");
+      show(hash);
+      if (!embedded) location.hash = hash;
+    }),
+  );
+  document.querySelectorAll('article a[href^="#"]').forEach((a) =>
+    a.addEventListener("click", (e) => {
+      const hash = a.getAttribute("href"),
+        target = document.getElementById(hash.slice(1));
+      if (target) {
+        e.preventDefault();
+        show(hash);
+        target.scrollIntoView({ block: "center" });
+        if (!embedded) history.pushState(null, "", hash);
+      }
+    }),
+  );
+  document.querySelector("#all").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (!embedded)
+      history.replaceState(null, "", location.pathname + location.search);
+    show("");
+  });
+  document.querySelector("#print").addEventListener("click", () => {
+    appearance.open = false;
+    print();
+  });
+  document.querySelector("#save").addEventListener("click", () => {
+    appearance.open = false;
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelector("#appearance").removeAttribute("open");
+    const html = "<!doctype html>\\n" + clone.outerHTML;
+    const url = URL.createObjectURL(new Blob([html], { type: "text/html" })),
+      a = document.createElement("a");
+    a.href = url;
+    a.download =
+      (document.title
+        .toLowerCase()
+        .replaceAll(/[^\\p{L}\\p{N}]+/gu, "-")
+        .replaceAll(/^-|-$/g, "") || "document") + ".html";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  });
+  show();
 })();
 `;
 
@@ -17346,18 +17460,7 @@ var fontCss = `@font-face{font-family:Inter;src:url('${inter_default}') format('
 var import_sanitize_html = __toESM(require_sanitize_html(), 1);
 
 // src/document.css
-var document_default = `:root{--bg:#f6f6f3;--surface:#fff;--ink:#282c2b;--muted:#68726b;--line:#e4e7e3;--accent:#47654d;--soft:#f2f5f0;--ui-font:Inter,Arial,sans-serif;--reading-font:Inter,Arial,sans-serif;--title-font:Inter,Arial,sans-serif;--body-size:15px}
-[data-palette="warm"]{--bg:#efede7;--surface:#fffdf7;--ink:#38342f;--muted:#786e62;--line:#e8e0d5;--accent:#846849;--soft:#f5f0e5}
-[data-palette="sage"]{--bg:#eaf0e6;--surface:#fbfdf8;--ink:#30422f;--muted:#697962;--line:#dfe8da;--accent:#55704c;--soft:#eef4e9}
-[data-palette="midnight"]{--bg:#202522;--surface:#292f2b;--ink:#e9eee8;--muted:#a7b2a4;--line:#424c42;--accent:#b7c7a4;--soft:#343d32;color-scheme:dark}
-html[data-font="sans"]{--reading-font:Inter,Arial,sans-serif;--title-font:Inter,Arial,sans-serif}
-html[data-font="serif"]{--reading-font:Newsreader,Georgia,serif;--title-font:Newsreader,Georgia,serif;--body-size:19px}
-html[data-font="mono"]{--reading-font:'Plex Mono',monospace;--title-font:'Plex Mono',monospace;--body-size:14px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:var(--body-size)/1.85 var(--reading-font);-webkit-font-smoothing:antialiased}a{color:var(--accent);text-underline-offset:4px;text-decoration-thickness:1px}button,summary{font-family:var(--ui-font)}button{cursor:pointer}button,a,summary{-webkit-tap-highlight-color:transparent}a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}.skip{position:absolute;top:-100px;left:20px;z-index:20;background:var(--surface);padding:10px}.skip:focus{top:10px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:26px 0 22px;font:12px/1.5 var(--ui-font);color:var(--muted)}.document-name{display:flex;gap:9px;align-items:center}.document-name svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.4}.tools{display:flex;align-items:center;gap:7px}.tool{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 11px;font:12px/1.5 var(--ui-font);color:var(--muted);border:0;background:transparent;text-decoration:none;border-radius:6px}.tool:hover{background:var(--line);color:var(--ink)}.tool svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6}.appearance{position:relative}.appearance summary{list-style:none;cursor:pointer}.appearance summary::-webkit-details-marker{display:none}.appearance[open] summary{background:var(--line);color:var(--ink)}.appearance-panel{position:absolute;top:45px;right:0;z-index:10;width:308px;border:1px solid var(--line);background:var(--surface);box-shadow:0 12px 45px #15261618;border-radius:12px;padding:21px;color:var(--ink);font:12px/1.5 var(--ui-font)}.control-label{display:block;margin-bottom:13px;font-size:11px;color:var(--muted)}.palette-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.palette-options button{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:0;padding:3px 0 7px;border-radius:5px;font-size:11px;color:var(--muted)}.swatch{width:35px;height:35px;border:1px solid #00000012;border-radius:50%;display:grid;place-items:center}.swatch svg{width:13px;height:13px;stroke:#42513b;stroke-width:2;fill:none;opacity:0}.palette-options button[aria-pressed=true]{color:var(--ink)}.palette-options button[aria-pressed=true] .swatch{outline:2px solid var(--accent);outline-offset:3px}.palette-options button[aria-pressed=true] .swatch svg{opacity:1}.swatch-light{background:#fff}.swatch-paper{background:#f5ebd7}.swatch-sage{background:#dce8d3}.swatch-dark{background:#303b31}.swatch-dark svg{stroke:#d7e7cc}.font-controls{border-top:1px solid var(--line);padding-top:19px;margin-top:17px}.font-options{display:grid;gap:6px}.font-option{display:flex;align-items:center;gap:13px;width:100%;border:1px solid transparent;background:none;text-align:left;padding:9px 11px;border-radius:6px;color:var(--ink)}.font-option[aria-pressed=true]{background:var(--soft);border-color:var(--line)}.font-option:hover{background:var(--soft)}.font-sample{font-size:25px;line-height:1;width:34px;flex-shrink:0}.font-name{font-size:11px}.font-name small{display:block;font-size:11px;color:var(--muted);margin-top:2px}.font-option[data-font-choice="serif"] .font-sample{font-family:Newsreader,Georgia,serif}.font-option[data-font-choice="mono"] .font-sample{font-family:'Plex Mono',monospace;font-size:21px}.preference-note{color:var(--muted);font-size:11px;line-height:1.6;margin:13px 0 0}nav{font-family:var(--ui-font)}nav a{color:var(--muted);text-decoration:none}nav a[aria-current=page]{color:var(--ink);font-weight:500}nav .nav-label{font-size:11px;color:var(--muted)}article{min-width:0}h1,h2,h3,h4{font-family:var(--title-font);color:var(--ink);line-height:1.3}h1{font-size:43px;letter-spacing:-1.4px;font-weight:500;margin:0 0 15px}h2{font-size:24px;font-weight:500;letter-spacing:-.55px;margin:0 0 23px}h3{font-size:19px;font-weight:500;letter-spacing:-.3px;margin:30px 0 13px}h4{font-size:16px;font-weight:600;margin:26px 0 12px}.subtitle{font-size:17px;line-height:1.7;color:var(--muted);margin:0;max-width:600px}.document-heading{margin-bottom:34px}.document-section+.document-section{margin-top:42px;padding-top:34px;border-top:1px solid var(--line)}.document-section[hidden]{display:none}p{margin:0 0 17px}p,li{overflow-wrap:anywhere}strong{font-weight:600}li+li{margin-top:8px}ul,ol{padding-left:22px;margin:19px 0 25px}li ul,li ol{margin:8px 0 13px}input[type=checkbox]{accent-color:var(--accent);margin-right:8px}.task-list-item{list-style:none;position:relative;margin-left:-21px}blockquote{border-left:2px solid var(--accent);margin:26px 0;padding:4px 0 4px 22px;color:var(--muted)}blockquote p:last-child{margin-bottom:0}figure{margin:28px 0}figure img{max-width:100%;width:100%;height:auto;display:block;border-radius:7px}figcaption{font:11px/1.6 var(--ui-font);color:var(--muted);margin-top:10px}.code-block{margin:26px 0;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--soft)}.code-label{padding:9px 15px;border-bottom:1px solid var(--line);font:10px/1.5 var(--ui-font);color:var(--muted)}pre{margin:0;padding:17px 19px;overflow:auto;font-size:12px;line-height:1.8}code{font-family:'Plex Mono',Consolas,monospace;font-size:.84em}pre code{font-size:inherit}p code,li code{background:var(--soft);padding:3px 5px;border:1px solid var(--line);border-radius:3px}.hljs-keyword,.hljs-selector-tag{color:#9a5768}.hljs-string,.hljs-attr{color:#587746}.hljs-number,.hljs-literal{color:#876637}.hljs-comment{color:var(--muted)}[data-palette=midnight] .hljs-keyword{color:#dca3b0}[data-palette=midnight] .hljs-string,[data-palette=midnight] .hljs-attr{color:#b6cea0}[data-palette=midnight] .hljs-number{color:#d9bc91}.table-wrap{overflow:auto;margin:25px 0;border:1px solid var(--line);border-radius:7px}table{border-collapse:collapse;width:100%;text-align:left;font:12px/1.65 var(--ui-font)}th,td{padding:13px 16px;vertical-align:top;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:500;font-size:11px;color:var(--muted)}tr:last-child td{border-bottom:0}hr{border:0;border-top:1px solid var(--line);margin:30px 0}.callout{background:var(--soft);border:1px solid var(--line);border-radius:7px;padding:17px 20px;margin:26px 0;font-size:.93em}.callout-title{font:11px/1.5 var(--ui-font);font-weight:600;margin-bottom:8px;color:var(--accent)}.callout-warning,.callout-important{border-left:3px solid #b08b52}.callout p:last-child{margin-bottom:0}.section-number{display:none}.end-mark{height:1px;width:42px;background:var(--line);margin:44px 0 0}.footnotes{border-top:1px solid var(--line);padding-top:17px;margin-top:30px;font-size:.85em;color:var(--muted)}.footnotes h2{font:11px var(--ui-font);color:var(--muted);margin-bottom:10px}.footnotes ol{margin:0;padding-left:18px}.footnotes p{margin-bottom:8px}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}sup a{font:10px var(--ui-font)}
-@media(max-width:650px){.toolbar{padding:18px 0;gap:8px}.document-name{font-size:10px}.tool{padding:8px;gap:5px;font-size:11px}.tool svg{width:13px}.tool.save .tool-label,.tool.print .tool-label{display:none}.appearance-panel{right:-32px;width:290px}.tools{gap:1px}h1{font-size:33px;letter-spacing:-1px}h2{font-size:23px}.subtitle{font-size:16px}th,td{padding:11px}.document-heading{margin-bottom:29px}figure{margin:23px 0}.appearance-summary .current-colour{display:none}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{html{color-scheme:light!important}body{background:white!important;color:#111!important;font-size:11pt;--surface:white;--ink:#111;--muted:#555;--line:#ccc;--soft:#f4f4f4;--accent:#333}.toolbar,nav,.skip{display:none!important}.shell{padding:0!important;max-width:none!important;margin:0!important}.layout{display:block!important;margin:0!important}article{padding:0!important;border:0!important;max-width:none!important;background:white!important;box-shadow:none!important}.document-section[hidden]{display:block!important}h1,h2,h3,h4{break-after:avoid}tr,figure,blockquote,.callout{break-inside:avoid}a{color:inherit}.document-heading{margin-bottom:28px}.end-mark{display:none}figure img{max-height:360px;object-fit:contain}.appearance-panel{display:none!important}}
-`;
+var document_default = ':root {\n  --bg: #f6f6f3;\n  --surface: #fff;\n  --ink: #282c2b;\n  --muted: #68726b;\n  --line: #e4e7e3;\n  --accent: #47654d;\n  --soft: #f2f5f0;\n  --ui-font: Inter, Arial, sans-serif;\n  --reading-font: Inter, Arial, sans-serif;\n  --title-font: Inter, Arial, sans-serif;\n  --body-size: 15px;\n}\n[data-palette="warm"] {\n  --bg: #efede7;\n  --surface: #fffdf7;\n  --ink: #38342f;\n  --muted: #786e62;\n  --line: #e8e0d5;\n  --accent: #846849;\n  --soft: #f5f0e5;\n}\n[data-palette="sage"] {\n  --bg: #eaf0e6;\n  --surface: #fbfdf8;\n  --ink: #30422f;\n  --muted: #697962;\n  --line: #dfe8da;\n  --accent: #55704c;\n  --soft: #eef4e9;\n}\n[data-palette="midnight"] {\n  --bg: #202522;\n  --surface: #292f2b;\n  --ink: #e9eee8;\n  --muted: #a7b2a4;\n  --line: #424c42;\n  --accent: #b7c7a4;\n  --soft: #343d32;\n  color-scheme: dark;\n}\nhtml[data-font="sans"] {\n  --reading-font: Inter, Arial, sans-serif;\n  --title-font: Inter, Arial, sans-serif;\n}\nhtml[data-font="serif"] {\n  --reading-font: Newsreader, Georgia, serif;\n  --title-font: Newsreader, Georgia, serif;\n  --body-size: 19px;\n}\nhtml[data-font="mono"] {\n  --reading-font: "Plex Mono", monospace;\n  --title-font: "Plex Mono", monospace;\n  --body-size: 14px;\n}\n* {\n  box-sizing: border-box;\n}\nhtml {\n  scroll-behavior: smooth;\n}\nbody {\n  margin: 0;\n  background: var(--bg);\n  color: var(--ink);\n  font: var(--body-size)/1.85 var(--reading-font);\n  -webkit-font-smoothing: antialiased;\n}\na {\n  color: var(--accent);\n  text-underline-offset: 4px;\n  text-decoration-thickness: 1px;\n}\nbutton,\nsummary {\n  font-family: var(--ui-font);\n}\nbutton {\n  cursor: pointer;\n}\nbutton,\na,\nsummary {\n  -webkit-tap-highlight-color: transparent;\n}\na:focus-visible,\nbutton:focus-visible,\nsummary:focus-visible {\n  outline: 2px solid var(--accent);\n  outline-offset: 4px;\n}\n.skip {\n  position: absolute;\n  top: -100px;\n  left: 20px;\n  z-index: 20;\n  background: var(--surface);\n  padding: 10px;\n}\n.skip:focus {\n  top: 10px;\n}\n.toolbar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 20px;\n  padding: 26px 0 22px;\n  font: 12px/1.5 var(--ui-font);\n  color: var(--muted);\n}\n.document-name {\n  display: flex;\n  gap: 9px;\n  align-items: center;\n}\n.document-name svg {\n  width: 15px;\n  height: 15px;\n  stroke: currentColor;\n  fill: none;\n  stroke-width: 1.4;\n}\n.tools {\n  display: flex;\n  align-items: center;\n  gap: 7px;\n}\n.tool {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  padding: 8px 11px;\n  font: 12px/1.5 var(--ui-font);\n  color: var(--muted);\n  border: 0;\n  background: transparent;\n  text-decoration: none;\n  border-radius: 6px;\n}\n.tool:hover {\n  background: var(--line);\n  color: var(--ink);\n}\n.tool svg {\n  width: 15px;\n  height: 15px;\n  stroke: currentColor;\n  fill: none;\n  stroke-width: 1.6;\n}\n.appearance {\n  position: relative;\n}\n.appearance summary {\n  list-style: none;\n  cursor: pointer;\n}\n.appearance summary::-webkit-details-marker {\n  display: none;\n}\n.appearance[open] summary {\n  background: var(--line);\n  color: var(--ink);\n}\n.appearance-panel {\n  position: absolute;\n  top: 45px;\n  right: 0;\n  z-index: 10;\n  width: 308px;\n  border: 1px solid var(--line);\n  background: var(--surface);\n  box-shadow: 0 12px 45px #15261618;\n  border-radius: 12px;\n  padding: 21px;\n  color: var(--ink);\n  font: 12px/1.5 var(--ui-font);\n}\n.control-label {\n  display: block;\n  margin-bottom: 13px;\n  font-size: 11px;\n  color: var(--muted);\n}\n.palette-options {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  gap: 8px;\n}\n.palette-options button {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 8px;\n  background: none;\n  border: 0;\n  padding: 3px 0 7px;\n  border-radius: 5px;\n  font-size: 11px;\n  color: var(--muted);\n}\n.swatch {\n  width: 35px;\n  height: 35px;\n  border: 1px solid #00000012;\n  border-radius: 50%;\n  display: grid;\n  place-items: center;\n}\n.swatch svg {\n  width: 13px;\n  height: 13px;\n  stroke: #42513b;\n  stroke-width: 2;\n  fill: none;\n  opacity: 0;\n}\n.palette-options button[aria-pressed="true"] {\n  color: var(--ink);\n}\n.palette-options button[aria-pressed="true"] .swatch {\n  outline: 2px solid var(--accent);\n  outline-offset: 3px;\n}\n.palette-options button[aria-pressed="true"] .swatch svg {\n  opacity: 1;\n}\n.swatch-light {\n  background: #fff;\n}\n.swatch-paper {\n  background: #f5ebd7;\n}\n.swatch-sage {\n  background: #dce8d3;\n}\n.swatch-dark {\n  background: #303b31;\n}\n.swatch-dark svg {\n  stroke: #d7e7cc;\n}\n.font-controls {\n  border-top: 1px solid var(--line);\n  padding-top: 19px;\n  margin-top: 17px;\n}\n.font-options {\n  display: grid;\n  gap: 6px;\n}\n.font-option {\n  display: flex;\n  align-items: center;\n  gap: 13px;\n  width: 100%;\n  border: 1px solid transparent;\n  background: none;\n  text-align: left;\n  padding: 9px 11px;\n  border-radius: 6px;\n  color: var(--ink);\n}\n.font-option[aria-pressed="true"] {\n  background: var(--soft);\n  border-color: var(--line);\n}\n.font-option:hover {\n  background: var(--soft);\n}\n.font-sample {\n  font-size: 25px;\n  line-height: 1;\n  width: 34px;\n  flex-shrink: 0;\n}\n.font-name {\n  font-size: 11px;\n}\n.font-name small {\n  display: block;\n  font-size: 11px;\n  color: var(--muted);\n  margin-top: 2px;\n}\n.font-option[data-font-choice="serif"] .font-sample {\n  font-family: Newsreader, Georgia, serif;\n}\n.font-option[data-font-choice="mono"] .font-sample {\n  font-family: "Plex Mono", monospace;\n  font-size: 21px;\n}\n.preference-note {\n  color: var(--muted);\n  font-size: 11px;\n  line-height: 1.6;\n  margin: 13px 0 0;\n}\nnav {\n  font-family: var(--ui-font);\n}\nnav a {\n  color: var(--muted);\n  text-decoration: none;\n}\nnav a[aria-current="page"] {\n  color: var(--ink);\n  font-weight: 500;\n}\nnav .nav-label {\n  font-size: 11px;\n  color: var(--muted);\n}\narticle {\n  min-width: 0;\n}\nh1,\nh2,\nh3,\nh4 {\n  font-family: var(--title-font);\n  color: var(--ink);\n  line-height: 1.3;\n}\nh1 {\n  font-size: 43px;\n  letter-spacing: -1.4px;\n  font-weight: 500;\n  margin: 0 0 15px;\n}\nh2 {\n  font-size: 24px;\n  font-weight: 500;\n  letter-spacing: -0.55px;\n  margin: 0 0 23px;\n}\nh3 {\n  font-size: 19px;\n  font-weight: 500;\n  letter-spacing: -0.3px;\n  margin: 30px 0 13px;\n}\nh4 {\n  font-size: 16px;\n  font-weight: 600;\n  margin: 26px 0 12px;\n}\n.subtitle {\n  font-size: 17px;\n  line-height: 1.7;\n  color: var(--muted);\n  margin: 0;\n  max-width: 600px;\n}\n.document-heading {\n  margin-bottom: 34px;\n}\n.document-section + .document-section {\n  margin-top: 42px;\n  padding-top: 34px;\n  border-top: 1px solid var(--line);\n}\n.document-section[hidden] {\n  display: none;\n}\np {\n  margin: 0 0 17px;\n}\np,\nli {\n  overflow-wrap: anywhere;\n}\nstrong {\n  font-weight: 600;\n}\nli + li {\n  margin-top: 8px;\n}\nul,\nol {\n  padding-left: 22px;\n  margin: 19px 0 25px;\n}\nli ul,\nli ol {\n  margin: 8px 0 13px;\n}\ninput[type="checkbox"] {\n  accent-color: var(--accent);\n  margin-right: 8px;\n}\n.task-list-item {\n  list-style: none;\n  position: relative;\n  margin-left: -21px;\n}\nblockquote {\n  border-left: 2px solid var(--accent);\n  margin: 26px 0;\n  padding: 4px 0 4px 22px;\n  color: var(--muted);\n}\nblockquote p:last-child {\n  margin-bottom: 0;\n}\nfigure {\n  margin: 28px 0;\n}\nfigure img {\n  max-width: 100%;\n  width: 100%;\n  height: auto;\n  display: block;\n  border-radius: 7px;\n}\nfigcaption {\n  font: 11px/1.6 var(--ui-font);\n  color: var(--muted);\n  margin-top: 10px;\n}\n.code-block {\n  margin: 26px 0;\n  border: 1px solid var(--line);\n  border-radius: 7px;\n  overflow: hidden;\n  background: var(--soft);\n}\n.code-label {\n  padding: 9px 15px;\n  border-bottom: 1px solid var(--line);\n  font: 10px/1.5 var(--ui-font);\n  color: var(--muted);\n}\npre {\n  margin: 0;\n  padding: 17px 19px;\n  overflow: auto;\n  font-size: 12px;\n  line-height: 1.8;\n}\ncode {\n  font-family: "Plex Mono", Consolas, monospace;\n  font-size: 0.84em;\n}\npre code {\n  font-size: inherit;\n}\np code,\nli code {\n  background: var(--soft);\n  padding: 3px 5px;\n  border: 1px solid var(--line);\n  border-radius: 3px;\n}\n.hljs-keyword,\n.hljs-selector-tag {\n  color: #9a5768;\n}\n.hljs-string,\n.hljs-attr {\n  color: #587746;\n}\n.hljs-number,\n.hljs-literal {\n  color: #876637;\n}\n.hljs-comment {\n  color: var(--muted);\n}\n[data-palette="midnight"] .hljs-keyword {\n  color: #dca3b0;\n}\n[data-palette="midnight"] .hljs-string,\n[data-palette="midnight"] .hljs-attr {\n  color: #b6cea0;\n}\n[data-palette="midnight"] .hljs-number {\n  color: #d9bc91;\n}\n.table-wrap {\n  overflow: auto;\n  margin: 25px 0;\n  border: 1px solid var(--line);\n  border-radius: 7px;\n}\ntable {\n  border-collapse: collapse;\n  width: 100%;\n  text-align: left;\n  font: 12px/1.65 var(--ui-font);\n}\nth,\ntd {\n  padding: 13px 16px;\n  vertical-align: top;\n  border-bottom: 1px solid var(--line);\n}\nth {\n  background: var(--soft);\n  font-weight: 500;\n  font-size: 11px;\n  color: var(--muted);\n}\ntr:last-child td {\n  border-bottom: 0;\n}\nhr {\n  border: 0;\n  border-top: 1px solid var(--line);\n  margin: 30px 0;\n}\n.callout {\n  background: var(--soft);\n  border: 1px solid var(--line);\n  border-radius: 7px;\n  padding: 17px 20px;\n  margin: 26px 0;\n  font-size: 0.93em;\n}\n.callout-title {\n  font: 11px/1.5 var(--ui-font);\n  font-weight: 600;\n  margin-bottom: 8px;\n  color: var(--accent);\n}\n.callout-warning,\n.callout-important {\n  border-left: 3px solid #b08b52;\n}\n.callout p:last-child {\n  margin-bottom: 0;\n}\n.section-number {\n  display: none;\n}\n.end-mark {\n  height: 1px;\n  width: 42px;\n  background: var(--line);\n  margin: 44px 0 0;\n}\n.footnotes {\n  border-top: 1px solid var(--line);\n  padding-top: 17px;\n  margin-top: 30px;\n  font-size: 0.85em;\n  color: var(--muted);\n}\n.footnotes h2 {\n  font: 11px var(--ui-font);\n  color: var(--muted);\n  margin-bottom: 10px;\n}\n.footnotes ol {\n  margin: 0;\n  padding-left: 18px;\n}\n.footnotes p {\n  margin-bottom: 8px;\n}\n.sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  white-space: nowrap;\n}\nsup a {\n  font: 10px var(--ui-font);\n}\n@media (max-width: 650px) {\n  .toolbar {\n    padding: 18px 0;\n    gap: 8px;\n  }\n  .document-name {\n    font-size: 10px;\n  }\n  .tool {\n    padding: 8px;\n    gap: 5px;\n    font-size: 11px;\n  }\n  .tool svg {\n    width: 13px;\n  }\n  .tool.save .tool-label,\n  .tool.print .tool-label {\n    display: none;\n  }\n  .appearance-panel {\n    right: -32px;\n    width: 290px;\n  }\n  .tools {\n    gap: 1px;\n  }\n  h1 {\n    font-size: 33px;\n    letter-spacing: -1px;\n  }\n  h2 {\n    font-size: 23px;\n  }\n  .subtitle {\n    font-size: 16px;\n  }\n  th,\n  td {\n    padding: 11px;\n  }\n  .document-heading {\n    margin-bottom: 29px;\n  }\n  figure {\n    margin: 23px 0;\n  }\n  .appearance-summary .current-colour {\n    display: none;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  html {\n    scroll-behavior: auto;\n  }\n}\n@media print {\n  html {\n    color-scheme: light !important;\n  }\n  body {\n    background: white !important;\n    color: #111 !important;\n    font-size: 11pt;\n    --surface: white;\n    --ink: #111;\n    --muted: #555;\n    --line: #ccc;\n    --soft: #f4f4f4;\n    --accent: #333;\n  }\n  .toolbar,\n  nav,\n  .skip {\n    display: none !important;\n  }\n  .shell {\n    padding: 0 !important;\n    max-width: none !important;\n    margin: 0 !important;\n  }\n  .layout {\n    display: block !important;\n    margin: 0 !important;\n  }\n  article {\n    padding: 0 !important;\n    border: 0 !important;\n    max-width: none !important;\n    background: white !important;\n    box-shadow: none !important;\n  }\n  .document-section[hidden] {\n    display: block !important;\n  }\n  h1,\n  h2,\n  h3,\n  h4 {\n    break-after: avoid;\n  }\n  tr,\n  figure,\n  blockquote,\n  .callout {\n    break-inside: avoid;\n  }\n  a {\n    color: inherit;\n  }\n  .document-heading {\n    margin-bottom: 28px;\n  }\n  .end-mark {\n    display: none;\n  }\n  figure img {\n    max-height: 360px;\n    object-fit: contain;\n  }\n  .appearance-panel {\n    display: none !important;\n  }\n}\n\nfieldset {\n  border: 0;\n  padding: 0;\n  margin: 0;\n  min-width: 0;\n}\nlegend {\n  padding: 0;\n}\n.task-label {\n  display: contents;\n}\n.align-left {\n  text-align: left;\n}\n.align-center {\n  text-align: center;\n}\n.align-right {\n  text-align: right;\n}\n';
 
 // src/brief.css
 var brief_default = ".shell{max-width:1120px;margin:0 auto;padding:0 40px}.layout{display:grid;grid-template-columns:164px minmax(0,1fr);gap:30px;margin:2px 0 70px}nav{position:sticky;top:28px;align-self:start;padding:28px 0}nav .nav-label{display:block;margin:0 0 18px;letter-spacing:.3px}nav a{display:block;padding:8px 12px;margin:3px 0;font-size:11px;line-height:1.6;border-radius:5px}nav a[aria-current=page]{background:var(--line)}article{max-width:800px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:46px 50px 50px;box-shadow:0 5px 25px #14261504}.document-section:first-of-type>h2{font-size:20px}.document-section:first-of-type>figure:first-of-type{margin-top:20px}\n@media(max-width:760px){.shell{padding:0 18px}.layout{display:block;margin:0 0 36px}nav{position:static;display:flex;flex-wrap:wrap;gap:3px 7px;padding:0 0 16px}nav .nav-label{display:none}nav a{padding:5px 8px;font-size:10px}article{padding:29px 25px 35px;border-radius:8px}}\n";
@@ -17369,82 +17472,223 @@ var editorial_default = ":root{--reading-font:Newsreader,Georgia,serif;--title-f
 var report_default = ":root{--body-size:14px}.shell{max-width:1220px;padding:0 40px;margin:auto}.layout{display:grid;grid-template-columns:195px minmax(0,1fr);gap:0;margin:2px 0 70px;background:var(--surface);border:1px solid var(--line);border-radius:9px;overflow:clip}nav{padding:35px 24px;align-self:start;position:sticky;top:20px}nav .nav-label{display:block;font:9px/1.5 'Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:24px}nav a{display:flex;gap:9px;font-size:11px;padding:9px 0}nav a::before{content:attr(data-number);font:10px/1.6 'Plex Mono',monospace;color:var(--muted)}article{padding:40px 46px 50px;border-left:1px solid var(--line)}h1{font-size:36px;letter-spacing:-1px}.document-heading{padding-bottom:27px;border-bottom:2px solid var(--ink);margin-bottom:30px}h2{display:flex;gap:13px;align-items:baseline;font-size:22px}.section-number{display:inline;font:11px/1 'Plex Mono',monospace;color:var(--muted)}h3{font-size:17px;margin:28px 0 12px}.subtitle{font-size:16px}th,td{padding:11px 14px}table{font-size:11px}figure{margin:24px 0}figure img{border:1px solid var(--line)}\n@media(max-width:760px){.shell{padding:0 18px}.layout{display:block}nav{position:static;display:flex;flex-wrap:wrap;gap:6px 16px;padding:16px 23px;border-bottom:1px solid var(--line)}nav .nav-label{display:none}nav a{padding:0;font-size:10px}article{padding:30px 23px;border-left:0}h1{font-size:30px}}\n";
 
 // src/renderer.mjs
-for (const [name, language] of Object.entries({ javascript, json, css, bash, python })) core_default.registerLanguage(name, language);
-var escape2 = (value) => String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-var mimeTypes = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp", ".avif": "image/avif" };
+for (const [name, language] of Object.entries({
+  javascript,
+  json,
+  css,
+  bash,
+  python
+}))
+  core_default.registerLanguage(name, language);
+var escape2 = (value) => String(value).replaceAll(
+  /[&<>"']/g,
+  (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
+);
+var mimeTypes = {
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".avif": "image/avif"
+};
 function imageUrl(href, baseDir) {
-  if (/^data:image\/(png|jpeg|gif|webp|avif);base64,[a-z\d+/=\s]+$/i.test(href)) return href;
-  if (/^[a-z][a-z\d+.-]*:|^\/\//i.test(href)) throw new Error("Images must be local PNG, JPEG, GIF, WebP, or AVIF files, or raster data URLs. Download an authorised image first.");
+  if (/^data:image\/(png|jpeg|gif|webp|avif);base64,[a-z\d+/=\s]+$/i.test(href))
+    return href;
+  if (/^[a-z][a-z\d+.-]*:|^\/\//i.test(href))
+    throw new Error(
+      "Images must be local PNG, JPEG, GIF, WebP, or AVIF files, or raster data URLs. Download an authorised image first."
+    );
   const file = path.resolve(baseDir, decodeURIComponent(href));
   const mime = mimeTypes[path.extname(file).toLowerCase()];
   if (!mime) throw new Error("Unsupported image format: " + href);
   const data = fs.readFileSync(file);
-  if (data.length > 10 * 1024 * 1024) throw new Error("Image exceeds 10 MB: " + href);
+  if (data.length > 10 * 1024 * 1024)
+    throw new Error("Image exceeds 10 MB: " + href);
   return "data:" + mime + ";base64," + data.toString("base64");
 }
+function alignedCell(tagName, attrs) {
+  const alignment = attrs.align;
+  const className = ["left", "center", "right"].includes(alignment) ? "align-" + alignment : "";
+  return { tagName, attribs: className ? { class: className } : {} };
+}
 function renderDocument(doc, baseDir = process.cwd()) {
-  if (!doc || typeof doc !== "object" || typeof doc.title !== "string" || !doc.title.trim()) throw new Error("title must be a non-empty string");
+  if (!doc || typeof doc !== "object" || typeof doc.title !== "string" || !doc.title.trim())
+    throw new Error("title must be a non-empty string");
   const style = doc.style ?? "brief";
-  if (!["brief", "editorial", "report"].includes(style)) throw new Error("style must be brief, editorial, or report");
-  const palette = doc.palette ?? ({ paper: "warm", sage: "sage", midnight: "midnight" }[doc.theme] ?? "neutral");
-  if (doc.theme !== void 0 && !["sage", "paper", "midnight"].includes(doc.theme)) throw new Error("Legacy theme must be sage, paper, or midnight");
-  if (!["neutral", "warm", "sage", "midnight"].includes(palette)) throw new Error("palette must be neutral, warm, sage, or midnight");
+  if (!["brief", "editorial", "report"].includes(style))
+    throw new Error("style must be brief, editorial, or report");
+  const palette = doc.palette ?? { paper: "warm", sage: "sage", midnight: "midnight" }[doc.theme] ?? "neutral";
+  if (doc.theme !== void 0 && !["sage", "paper", "midnight"].includes(doc.theme))
+    throw new Error("Legacy theme must be sage, paper, or midnight");
+  if (!["neutral", "warm", "sage", "midnight"].includes(palette))
+    throw new Error("palette must be neutral, warm, sage, or midnight");
   const font = doc.font ?? "default";
-  if (!["default", "sans", "serif", "mono"].includes(font)) throw new Error("font must be default, sans, serif, or mono");
-  if (doc.subtitle !== void 0 && typeof doc.subtitle !== "string") throw new Error("subtitle must be a string");
-  if (!Array.isArray(doc.pages) || !doc.pages.length) throw new Error("pages must be a non-empty array");
+  if (!["default", "sans", "serif", "mono"].includes(font))
+    throw new Error("font must be default, sans, serif, or mono");
+  if (doc.subtitle !== void 0 && typeof doc.subtitle !== "string")
+    throw new Error("subtitle must be a string");
+  if (!Array.isArray(doc.pages) || !doc.pages.length)
+    throw new Error("pages must be a non-empty array");
   const renderer = new k.Renderer();
   renderer.html = ({ text }) => escape2(text);
-  renderer.image = ({ href, title, text }) => `<figure><img src="${escape2(imageUrl(href, baseDir))}" alt="${escape2(text)}" loading="lazy">${title ? `<figcaption>${escape2(title)}</figcaption>` : ""}</figure>`;
+  renderer.image = ({ href, title, text }) => {
+    const caption = title ? "<figcaption>" + escape2(title) + "</figcaption>" : "";
+    return `<figure aria-label="${escape2(title || text)}"><img src="${escape2(imageUrl(href, baseDir))}" alt="${escape2(text)}" loading="lazy">${caption}</figure>`;
+  };
   renderer.paragraph = function(token) {
     const html = this.parser.parseInline(token.tokens);
     return token.tokens.length === 1 && token.tokens[0].type === "image" ? html : `<p>${html}</p>
 `;
   };
   renderer.blockquote = function(token) {
-    const match = token.text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*\n?/);
+    const match = token.text.match(
+      /^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*\n?/
+    );
     const html = this.parser.parse(token.tokens);
     if (!match) return `<blockquote>${html}</blockquote>`;
     const type = match[1].toLowerCase();
     return `<aside class="callout callout-${type}"><div class="callout-title">${type[0].toUpperCase() + type.slice(1)}</div>${html.replace(/^<p>\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*(?:<br>)?\s*/, "<p>")}</aside>`;
   };
   renderer.code = ({ text, lang }) => {
-    const name = (lang || "").split(/\s/)[0], aliases = { js: "javascript", ts: "javascript", sh: "bash", shell: "bash", py: "python" }, language = aliases[name] || name;
+    const name = (lang || "").split(/\s/)[0], aliases = {
+      js: "javascript",
+      ts: "javascript",
+      sh: "bash",
+      shell: "bash",
+      py: "python"
+    }, language = aliases[name] || name;
     const html = language && core_default.getLanguage(language) ? core_default.highlight(text, { language, ignoreIllegals: true }).value : escape2(text);
     return `<div class="code-block"><div class="code-label">${escape2(name || "Code")}</div><pre><code>${html}</code></pre></div>`;
   };
   const pages = doc.pages.map((p, i) => {
-    if (!p || typeof p.title !== "string" || !p.title.trim() || typeof p.markdown !== "string") throw new Error("Each page needs a title string and a markdown string");
-    const parser = new B().use(C2({ prefixId: `page-${i + 1}-note-`, headingClass: "footnote-heading" }));
-    const html = (0, import_sanitize_html.default)(parser.parse(p.markdown, { renderer, gfm: true }), {
-      allowedTags: import_sanitize_html.default.defaults.allowedTags.concat(["img", "del", "input", "figure", "figcaption", "aside", "section"]),
-      allowedAttributes: { a: ["href", "title", "id", "aria-label", "aria-describedby", "data-footnote-ref", "data-footnote-backref"], img: ["src", "alt", "loading"], input: ["type", "checked", "disabled"], th: ["align"], td: ["align"], span: ["class"], code: ["class"], div: ["class"], aside: ["class"], section: ["class", "data-footnotes"], h2: ["id", "class"], li: ["id", "class"], ol: ["start", "class"], sup: ["class"] },
-      allowedSchemes: ["https", "http", "mailto"],
-      allowedSchemesByTag: { img: ["data"] },
-      allowProtocolRelative: false,
-      transformTags: { input: (_tag, attrs) => ({ tagName: "input", attribs: { type: "checkbox", disabled: "", ...Object.hasOwn(attrs, "checked") ? { checked: "" } : {} } }) }
-    }).replace(/<table>/g, '<div class="table-wrap"><table>').replace(/<\/table>/g, "</table></div>");
-    return `<section class="document-section" id="page-${i + 1}" aria-labelledby="heading-${i + 1}"><h2 id="heading-${i + 1}">${style === "report" ? `<span class="section-number">${String(i + 1).padStart(2, "0")}</span>` : ""}${escape2(p.title)}</h2>${html}</section>`;
+    if (!p || typeof p.title !== "string" || !p.title.trim() || typeof p.markdown !== "string")
+      throw new Error("Each page needs a title string and a markdown string");
+    let taskIndex = 0;
+    renderer.listitem = function(token) {
+      if (!token.task) {
+        return k.Renderer.prototype.listitem.call(this, token);
+      }
+      const id = "page-" + (i + 1) + "-task-" + ++taskIndex;
+      const checked = token.checked ? ' checked=""' : "";
+      const content = this.parser.parse(token.tokens, !!token.loose);
+      return `<li class="task-list-item"><input id="${id}" type="checkbox" disabled=""${checked} aria-labelledby="${id}-label"><div class="task-label" id="${id}-label">${content}</div></li>`;
+    };
+    const parser = new B().use(
+      C2({
+        prefixId: `page-${i + 1}-note-`,
+        headingClass: "footnote-heading"
+      })
+    );
+    const html = (0, import_sanitize_html.default)(
+      parser.parse(p.markdown, { renderer, gfm: true }),
+      {
+        allowedTags: import_sanitize_html.default.defaults.allowedTags.concat([
+          "img",
+          "del",
+          "input",
+          "figure",
+          "figcaption",
+          "aside",
+          "section"
+        ]),
+        allowedAttributes: {
+          a: [
+            "href",
+            "title",
+            "id",
+            "aria-label",
+            "aria-describedby",
+            "data-footnote-ref",
+            "data-footnote-backref"
+          ],
+          img: ["src", "alt", "loading"],
+          input: ["type", "checked", "disabled", "id", "aria-labelledby"],
+          th: ["class"],
+          td: ["class"],
+          span: ["class"],
+          code: ["class"],
+          div: ["class", "id"],
+          figure: ["aria-label"],
+          aside: ["class"],
+          section: ["class", "data-footnotes", "aria-label"],
+          h2: ["id", "class"],
+          li: ["id", "class"],
+          ol: ["start", "class"],
+          sup: ["class"]
+        },
+        allowedSchemes: ["https", "http", "mailto"],
+        allowedSchemesByTag: { img: ["data"] },
+        allowProtocolRelative: false,
+        transformTags: {
+          input: (_tag, attrs) => ({
+            tagName: "input",
+            attribs: { ...attrs, type: "checkbox", disabled: "" }
+          }),
+          section: (_tag, attrs) => ({
+            tagName: "section",
+            attribs: { ...attrs, "aria-label": "Footnotes" }
+          }),
+          th: alignedCell,
+          td: alignedCell
+        }
+      }
+    ).replaceAll("<table>", '<div class="table-wrap"><table>').replaceAll("</table>", "</table></div>");
+    const number = style === "report" ? '<span class="section-number">' + String(i + 1).padStart(2, "0") + "</span>" : "";
+    return `<section class="document-section" id="page-${i + 1}" aria-labelledby="heading-${i + 1}"><h2 id="heading-${i + 1}">${number}${escape2(p.title)}</h2>${html}</section>`;
   });
-  const styleCss = { brief: brief_default, editorial: editorial_default, report: report_default }[style];
+  const styleCss = {
+    brief: brief_default,
+    editorial: editorial_default,
+    report: report_default
+  }[style];
   const svg = (name) => {
-    const paths = { appearance: '<path d="M4 6h16M4 18h16M8 3v6M16 15v6"/>', print: '<path d="M7 8V3h10v5M7 17H4V8h16v9h-3M7 14h10v7H7Z"/>', save: '<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>', document: '<path d="M7 3h7l4 4v14H7ZM14 3v4h4M10 11h5M10 15h5"/>', check: '<path d="m4 9 3 3 6-7"/>' };
+    const paths = {
+      appearance: '<path d="M4 6h16M4 18h16M8 3v6M16 15v6"/>',
+      print: '<path d="M7 8V3h10v5M7 17H4V8h16v9h-3M7 14h10v7H7Z"/>',
+      save: '<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>',
+      document: '<path d="M7 3h7l4 4v14H7ZM14 3v4h4M10 11h5M10 15h5"/>',
+      check: '<path d="m4 9 3 3 6-7"/>'
+    };
     return `<svg viewBox="0 0 ${name === "check" ? "16 16" : "24 24"}" aria-hidden="true">${paths[name]}</svg>`;
   };
-  const colourNames = { neutral: "Light", warm: "Paper", sage: "Sage", midnight: "Dark" };
-  const appearance = `<details id="appearance" class="appearance"><summary class="tool appearance-summary">${svg("appearance")}<span>Appearance</span><span class="current-colour" id="view-colour">${colourNames[palette]}</span></summary><div class="appearance-panel"><span class="control-label">Colour</span><div class="palette-options" role="group" aria-label="Colour palette">${Object.entries(colourNames).map(([value, label]) => `<button type="button" data-palette-choice="${value}" aria-label="${label} colour palette" aria-pressed="${value === palette}"><span class="swatch swatch-${label.toLowerCase()}">${svg("check")}</span>${label}</button>`).join("")}</div><div class="font-controls"><span class="control-label">Reading font</span><div class="font-options" role="group" aria-label="Reading font">${Object.entries({ default: ["Layout default", "Original type pairing"], sans: ["Inter", "Clear, everyday reading"], serif: ["Newsreader", "A softer reading style"], mono: ["IBM Plex Mono", "Technical and monospaced"] }).map(([value, [name, note]]) => `<button type="button" class="font-option" data-font-choice="${value}" aria-pressed="${value === font}"><span class="font-sample">Aa</span><span class="font-name">${name}<small>${note}</small></span></button>`).join("")}</div><p class="preference-note">Use Save a copy to keep your choices in the file.</p></div></div></details>`;
+  const colourNames = {
+    neutral: "Light",
+    warm: "Paper",
+    sage: "Sage",
+    midnight: "Dark"
+  };
+  const colourOptions = Object.entries(colourNames).map(
+    ([value, label]) => `<button type="button" data-palette-choice="${value}" aria-label="${label} colour palette" aria-pressed="${value === palette}"><span class="swatch swatch-${label.toLowerCase()}">${svg("check")}</span>${label}</button>`
+  ).join("");
+  const fontOptions = Object.entries({
+    default: ["Layout default", "Original type pairing"],
+    sans: ["Inter", "Clear, everyday reading"],
+    serif: ["Newsreader", "A softer reading style"],
+    mono: ["IBM Plex Mono", "Technical and monospaced"]
+  }).map(
+    ([value, [name, note]]) => `<button type="button" class="font-option" data-font-choice="${value}" aria-pressed="${value === font}"><span class="font-sample">Aa</span><span class="font-name">${name}<small>${note}</small></span></button>`
+  ).join("");
+  const appearance = `<details id="appearance" class="appearance"><summary class="tool appearance-summary">${svg("appearance")}<span>Appearance</span><span class="current-colour" id="view-colour">${colourNames[palette]}</span></summary><div class="appearance-panel"><fieldset class="palette-options"><legend class="control-label">Colour</legend>${colourOptions}</fieldset><div class="font-controls"><fieldset class="font-options"><legend class="control-label">Reading font</legend>${fontOptions}</fieldset><p class="preference-note">Use Save a copy to keep your choices in the file.</p></div></div></details>`;
+  const navigation = doc.pages.map(
+    (p, i) => `<a href="#page-${i + 1}" data-number="${String(i + 1).padStart(2, "0")}">${escape2(p.title)}</a>`
+  ).join("");
+  const subtitle = doc.subtitle ? '<p class="subtitle">' + escape2(doc.subtitle) + "</p>" : "";
   return `<!doctype html><html lang="en" data-style="${style}" data-palette="${palette}" data-font="${font}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="${palette === "midnight" ? "dark" : "light"}"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; font-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>${escape2(doc.title)}</title><style>${fontCss}
 ${document_default}
-${styleCss}</style></head><body><a class="skip" href="#document">Skip to document</a><div class="shell"><header class="toolbar"><span class="document-name">${svg("document")} ${doc.pages.length} ${doc.pages.length === 1 ? "section" : "sections"}</span><div class="tools"><a href="#" id="all" class="tool">Read all</a>${appearance}<button id="save" type="button" class="tool save" aria-label="Save a copy">${svg("save")}<span class="tool-label">Save a copy</span></button><button id="print" type="button" class="tool print" aria-label="Print / PDF">${svg("print")}<span class="tool-label">Print</span></button></div></header><div class="layout"><nav aria-label="Document pages"><span class="nav-label">Contents</span>${doc.pages.map((p, i) => `<a href="#page-${i + 1}" data-number="${String(i + 1).padStart(2, "0")}">${escape2(p.title)}</a>`).join("")}</nav><article id="document"><div class="document-heading"><h1>${escape2(doc.title)}</h1>${doc.subtitle ? `<p class="subtitle">${escape2(doc.subtitle)}</p>` : ""}</div>${pages.join("")}<div class="end-mark" aria-hidden="true"></div></article></div></div><script>${reader_default}</script></body></html>`;
+${styleCss}</style></head><body><a class="skip" href="#document">Skip to document</a><div class="shell"><header class="toolbar"><span class="document-name">${svg("document")} ${doc.pages.length} ${doc.pages.length === 1 ? "section" : "sections"}</span><div class="tools"><a href="#" id="all" class="tool">Read all</a>${appearance}<button id="save" type="button" class="tool save" aria-label="Save a copy">${svg("save")}<span class="tool-label">Save a copy</span></button><button id="print" type="button" class="tool print" aria-label="Print / PDF">${svg("print")}<span class="tool-label">Print</span></button></div></header><div class="layout"><nav aria-label="Document pages"><span class="nav-label">Contents</span>${navigation}</nav><article id="document"><div class="document-heading"><h1>${escape2(doc.title)}</h1>${subtitle}</div>${pages.join("")}<div class="end-mark" aria-hidden="true"></div></article></div></div><script>${reader_default}</script></body></html>`;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const [input, output] = process.argv.slice(2);
-    if (!input || !output) throw new Error("Usage: node render.mjs input.json output.html");
+    if (!input || !output)
+      throw new Error("Usage: node render.mjs input.json output.html");
     const doc = JSON.parse(fs.readFileSync(input, "utf8"));
     const html = renderDocument(doc, path.dirname(path.resolve(input)));
     fs.writeFileSync(output, html);
-    console.log("Created " + output + " (" + Buffer.byteLength(html) + " bytes)");
+    console.log(
+      "Created " + output + " (" + Buffer.byteLength(html) + " bytes)"
+    );
   } catch (error) {
     console.error("Idea Zone: " + error.message);
     process.exitCode = 1;
