@@ -9,9 +9,9 @@ A private ChatGPT plugin and a Cloudflare Pages landing page for turning complex
 - A skills-only Agent Plugins 1.0 package in `idea-zone/`. No backend, API key, MCP server, or document upload service.
 - Short instructions: write a title, optional subtitle/layout/palette, and `pages` containing a title and Markdown. A bundled renderer handles layout, Markdown tables, images, navigation, and print styles. Includes an HTML template fallback for sessions without Node/Bun.
 - Three separate layouts: Brief (default), Editorial, Report. Each output contains only its selected layout.
-- Four reader-selectable colour palettes in every file: Neutral (default), Warm, Sage, Dark. Palette changes do not change the document layout.
-- Every exported document is **one HTML file**. CSS and JavaScript are inline; local raster images are embedded as data URLs. Pages are navigable sections in the file. Opening an output requires only a browser.
-- `dist/index.html` is also **one file**. It contains the landing page, live examples, example downloads, and the complete plugin ZIP download. No CDN or network asset dependency.
+- Four colour swatches in the Appearance panel: Light (default), Paper, Sage, Dark. Three embedded fonts: Inter, Newsreader, IBM Plex Mono, plus the layout default. Palette and font changes keep the layout fixed. Save a copy preserves the chosen appearance in a standalone file.
+- Every exported document is **one HTML file**. Fonts, CSS and JavaScript are inline; local raster images are embedded as data URLs. Pages are navigable sections in the file. Opening an output requires only a browser.
+- `dist/index.html` is also **one file**. It contains the landing page, a document preview, three illustrated examples that open in new tabs, reading-control demos, downloads, and the complete plugin ZIP download. No CDN or network asset dependency.
 
 The plugin has been saved privately to the creator's account, not listed publicly. The landing page labels private access honestly. Installation and file-generation capabilities depend on the ChatGPT surface and workspace. Public directory submission is a separate step.
 
@@ -35,7 +35,7 @@ npm run dev
 npm test
 ```
 
-Preview at http://localhost:5173. Build regenerates the bundled renderer, three layout examples, three layout templates, private plugin ZIP, and the single-file website. Browser checks use `npm run test:browser` after the dev server starts; install Chromium with `npx playwright install chromium` if no local browser is available.
+Preview at http://localhost:5173. Build regenerates the bundled renderer, three illustrated examples, three minimal layout templates, private plugin ZIP, and the single-file website. Browser checks use `npm run test:browser` after the dev server starts; install Chromium with `npx playwright install chromium` if no local browser is available.
 
 ## Make a document
 
@@ -57,7 +57,7 @@ node idea-zone/skills/share-idea/assets/render.mjs examples/idea.json my-idea.ht
 }
 ```
 
-Only `title` and `pages` are required. `style` selects the layout at render time; it cannot be changed inside the output. `palette` selects the initial colour, and readers can switch it in the Colour menu. To make another layout, render another file with the same content. Legacy `theme` input (sage/paper/midnight) remains accepted as an initial palette for the Brief layout. Images resolve relative to the JSON input. PNG/JPEG/GIF/WebP/AVIF files are supported up to 10 MB each. Remote images must be downloaded first; unsupported or missing images cause an explicit error. Raw HTML is escaped; executable link schemes are removed. Documents contain a restrictive CSP and never automatically fetch remote resources. Outgoing source links work when followed.
+Only `title` and `pages` are required. `style` selects the layout at render time; it cannot be changed inside the output. `palette` selects the initial colour, and readers can switch it in the Appearance panel. To make another layout, render another file with the same content. Legacy `theme` input (sage/paper/midnight) remains accepted as an initial palette for the Brief layout. Images resolve relative to the JSON input. PNG/JPEG/GIF/WebP/AVIF files are supported up to 10 MB each. Remote images must be downloaded first; unsupported or missing images cause an explicit error. Supported Markdown includes captions from image titles, GFM task lists, nested lists, callouts (`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`), highlighted code (JavaScript, JSON, CSS, Bash and Python), strikethrough, and per-page footnotes. Raw HTML is escaped; executable link schemes are removed. Documents contain a restrictive CSP and never automatically fetch remote resources. Outgoing source links work when followed.
 
 Generated files can be large when images are included. Some email services block HTML attachments; PDF export provides an alternative. Hosting a user's document requires a separate explicit request.
 
@@ -78,6 +78,14 @@ For Git integration, connect this repository in Cloudflare Pages, choose framewo
 
 The output focuses on the supplied content: no product logo, promotional footer, slogans, or filler sections. Brief uses compact sans-serif type and a contents column. Editorial uses a serif reading column and horizontal navigation. Report uses numbered sections, compact tables, and a bordered document layout. These are separate files, not colour variations. Print styles include every section and use dark text on white paper regardless of the chosen screen palette.
 
+## Illustrated examples
+
+- `examples/brief.json`: studio proposal with reference photography, a floor-plan diagram, costs, notes and tasks.
+- `examples/editorial.json`: coastal weekend with photography, a schedule, a quotation, nested lists and a source footnote.
+- `examples/report.json`: launch review with a release diagram, highlighted Bash/JSON/JavaScript and review checklists.
+
+These are illustrative documents, not claims about completed work or verified travel arrangements. Source photographs and credits are recorded in [examples/assets/CREDITS.md](examples/assets/CREDITS.md). `scripts/example-assets.mjs` builds compressed WebP images and the original diagrams; source photos remain local. Fonts and their OFL licenses are stored in `src/assets/fonts/`. The build includes credits and licenses in the plugin package.
+
 ## Design and research decisions
 
 - [Cloudflare supports static HTML](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/) and [Direct Upload of prebuilt assets](https://developers.cloudflare.com/pages/get-started/direct-upload/), so the landing page needs no server.
@@ -89,6 +97,7 @@ The output focuses on the supplied content: no product logo, promotional footer,
 
 - `src/renderer.mjs`, `src/document.css`: renderer source and shared palette/content styles.
 - `src/brief.css`, `src/editorial.css`, `src/report.css`: separate layout styles; only one is included in each exported file.
+- `src/reader.js`, `src/typefaces.mjs`, `src/assets/fonts/`: Appearance controls, preference persistence, file saving, and embedded typefaces.
 - `src/landing.html`: landing page source with build placeholders.
 - `scripts/build.mjs`: build and private packaging.
 - `idea-zone/`: plugin manifest, skill, bundled renderer, layout templates, example, icon, third-party licenses.

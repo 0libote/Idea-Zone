@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "idea-zone",
-  "version": "0.2.0",
-  "description": "Turn conversations into single-file HTML documents with tables, embedded images, separate layouts and reader-controlled colours.",
+  "version": "0.3.0",
+  "description": "Create complete HTML documents with images, rich Markdown, separate layouts and offline colour and font controls.",
   "author": {
     "name": "Idea Zone"
   },
@@ -11,7 +11,7 @@
       "interface": {
         "displayName": "Idea Zone",
         "shortDescription": "Documents from conversations",
-        "longDescription": "Turn a conversation into a readable HTML document. Brief, Editorial and Report are separate layouts with different typography and structure. Each exported file includes a reader-controlled colour menu, embedded images, Markdown tables, section navigation and print styles. Includes a bundled renderer and layout templates. File creation needs a session with file tools; Node or Bun enables automatic rendering, with an HTML template fallback.",
+        "longDescription": "Create a readable, self-contained HTML document from a conversation. Brief, Editorial and Report are separate layouts. Every file has an Appearance panel for colour and reading fonts: Inter, Newsreader and IBM Plex Mono, embedded for offline use. Supports image captions, comparison tables, checklists, nested lists, quotes, callouts, highlighted code and footnotes. Readers can save a copy with their chosen appearance or print all sections to PDF. Includes a bundled renderer, layout templates, rich examples and concise formatting instructions.",
         "developerName": "Idea Zone",
         "category": "Productivity",
         "logo": "./assets/icon.svg",

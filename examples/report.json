@@ -1,0 +1,20 @@
+{
+  "title": "Studio website launch review",
+  "subtitle": "A proposed release process for a small static website.",
+  "style": "report",
+  "palette": "neutral",
+  "pages": [
+    {
+      "title": "Release plan",
+      "markdown": "![A diagram showing source content passing through build and review to Cloudflare Pages, with a rollback path](./assets/release-path.webp \"Proposed release path \u00b7 Example diagram\")\n\nUse a static build and a preview deployment before the public release. The site needs a homepage, a work index, individual project pages and a contact route. It does not need a database for the first version.\n\n### Proposed scope\n\n| Area | First release | Later |\n| :--- | :--- | :--- |\n| Work | Selected projects with supplied images | Search and filtering |\n| Content | Versioned Markdown files | A CMS, if editing becomes a bottleneck |\n| Hosting | Static assets on Cloudflare Pages | Functions only when a real feature requires them |\n| Contact | Email link | Form with spam protection |\n\n### Approval gates\n\n1. **Content:** every project has reviewed text and approved images.\n2. **Build:** generated files and links are checked.\n3. **Preview:** desktop and mobile layouts are reviewed.\n4. **Publish:** the previous working release remains available for rollback.\n\n> [!NOTE]\n> This is an example planning document. It describes a proposed setup, not a completed deployment."
+    },
+    {
+      "title": "Build & configuration",
+      "markdown": "### A minimal command set\n\n```bash\nbun install --frozen-lockfile\nbun run build\nbun run test\n```\n\nKeep the generated site in `dist/`. A failed build or test should stop the release rather than publish a partial output.\n\n### Example configuration\n\n```json\n{\n  \"name\": \"studio-website\",\n  \"pages_build_output_dir\": \"dist\"\n}\n```\n\nThe project name is illustrative. Use the actual Cloudflare project when deploying.\n\n### A useful check for content\n\n```javascript\nconst required = [\"title\", \"summary\", \"images\"];\n\nfor (const project of projects) {\n  for (const field of required) {\n    if (!project[field]) {\n      throw new Error(`Missing ${field} in ${project.slug}`);\n    }\n  }\n}\n```\n\nThis catches missing fields. It does not check whether the writing or images are appropriate; those still need a person to review them.\n\nUse the official [Cloudflare Pages documentation](https://developers.cloudflare.com/pages/) for deployment details. The local build command is `bun run build`, not a browser dependency."
+    },
+    {
+      "title": "Review checklist",
+      "markdown": "### Content\n\n- [x] Agree the page list.\n- [x] Choose the first set of projects.\n- [ ] Review titles, dates and project descriptions.\n- [ ] Confirm image rights and write useful alt text.\n\n### Behaviour\n\n- [ ] Test navigation and outgoing links.\n- [ ] Check keyboard focus and page headings.\n- [ ] Test narrow screens and large text.\n- [ ] Check image sizes and loading behaviour.\n\n### Before publishing\n\n- **DNS:** confirm the intended domain.\n- **Redirects:** preserve any existing project URLs.\n- **Rollback:** record the previous deployment.\n  - Who can restore it?\n  - Where is the approved build stored?\n  - How will the team confirm the rollback worked?\n\n> [!WARNING]\n> Do not remove the old deployment until the new public URL has been checked.\n\n---\n\n### Open decisions\n\n| Decision | Owner | Needed before |\n| :--- | :--- | :--- |\n| Final project selection | Content editor | Preview review |\n| Public domain | Site owner | Publishing |\n| Contact email | Site owner | Content sign-off |\n\nThere are no assigned dates in this example. Add real owners and dates before using it as a release checklist."
+    }
+  ]
+}
